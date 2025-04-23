@@ -9,6 +9,9 @@ import uuid
 
 def main():
 	args = sys.argv[1:]
+	if len(args) == 0:
+		print(f"Usage:\n\tpj <json_path> args"); return
+
 	json_path, *rest = args
 
 	if not os.path.isfile(json_path):
@@ -18,7 +21,8 @@ def main():
 		with open(json_path) as f:
 			jo = json.load(f)
 	except Exception as e:
-		print(f"Error: {e}"); return
+		print(f"Parsing: '{json_path}'")
+		print(f"\tError: {e}"); return
 
 	current = jo
 	for arg in rest:
