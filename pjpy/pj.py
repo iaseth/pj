@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-from pypj.manipulation import manipulate_json
+from pypojo.manipulation import manipulate_json
 
 
 
