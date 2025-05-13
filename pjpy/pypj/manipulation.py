@@ -1,6 +1,7 @@
 import json
+import uuid
 
-from .utils import apply_slice
+from .utils import is_slice_syntax, apply_slice
 
 
 
@@ -17,14 +18,17 @@ def manipulate_json(jo, args):
 					if arg in current:
 						current = current[arg]
 					else:
-						print(f"Unknown arg: '{arg}'"); return
+						print(f"Key not found arg: '{arg}' {list(current.keys())}"); return
 		elif type(current) is list:
 			match arg:
 				case ":k" | ":keys": current = [i for i, x in enumerate(current)]
 				case "--" | ":flat": current = [y for x in current for y in x]
 				case ":id":
-					for idx, obj in enumerate(current):
+					for idx, obj in enumerate(current, start=1):
 						obj['id'] = idx
+				case ":index":
+					for idx, obj in enumerate(current):
+						obj['index'] = idx
 				case ":uuid":
 					for obj in current:
 						obj['uuid'] = str(uuid.uuid4())
@@ -37,8 +41,12 @@ def manipulate_json(jo, args):
 						map_prop = arg[2:]
 						current = [x[map_prop] for x in current]
 					elif arg.isnumeric():
-						n = int(arg)
-						current = current[n]
+						try:
+							n = int(arg)
+							current = current[n]
+						except Exception as e:
+							print(f"Invalid index: '{arg}' (array has {len(current)} elements)")
+							return
 					else:
 						print(f"Unknown arg: '{arg}'"); return
 		else:

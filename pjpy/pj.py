@@ -3,7 +3,6 @@
 import json
 import os
 import sys
-import uuid
 
 from pypj.manipulation import manipulate_json
 
