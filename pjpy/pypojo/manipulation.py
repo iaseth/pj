@@ -10,9 +10,24 @@ from .utils import is_slice_syntax, apply_slice
 def manipulate_json(jo, args):
 	current = jo
 	for arg in args:
+		if arg[0] == "-":
+			match arg:
+				case "-j": print(json.dumps(current))
+				case "--js": print(json.dumps(current, indent=4))
+				case "--json": print(json.dumps(current, indent="\t"))
+				case "--table":
+					print(tabulate(current['data'], headers=current['headers']))
+				case "--gh" | "--github":
+					print(tabulate(current['data'], headers=current['headers'], tablefmt="github"))
+				case "--md" | "--markdown":
+					print(tabulate(current['data'], headers=current['headers'], tablefmt="github"))
+				case _:
+					print(f"Unknown flag: '{arg}'")
+					return
+			continue
+
 		if type(current) is dict:
 			match arg:
-				case "--table": print(tabulate(current['data'], headers=current['headers']))
 				case ":k" | ":keys": current = list(current.keys())
 				case ":v" | ":values": current = list(current.values())
 				case ":kv": current = [[k, current[k]] for k in current]
@@ -24,8 +39,6 @@ def manipulate_json(jo, args):
 						print(f"Key not found arg: '{arg}' {list(current.keys())}"); return
 		elif type(current) is list:
 			match arg:
-				case "-j": print(json.dumps(current))
-				case "--json": print(json.dumps(current, indent="\t"))
 				case ":k" | ":keys": current = [i for i, x in enumerate(current)]
 				case "--" | ":flat": current = [y for x in current for y in x]
 				case ":id":
