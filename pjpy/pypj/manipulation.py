@@ -1,6 +1,8 @@
 import json
 import uuid
 
+from tabulate import tabulate
+
 from .utils import is_slice_syntax, apply_slice
 
 
@@ -10,6 +12,7 @@ def manipulate_json(jo, args):
 	for arg in args:
 		if type(current) is dict:
 			match arg:
+				case "--table": print(tabulate(current['data'], headers=current['headers']))
 				case ":k" | ":keys": current = list(current.keys())
 				case ":v" | ":values": current = list(current.values())
 				case ":kv": current = [[k, current[k]] for k in current]
@@ -21,6 +24,8 @@ def manipulate_json(jo, args):
 						print(f"Key not found arg: '{arg}' {list(current.keys())}"); return
 		elif type(current) is list:
 			match arg:
+				case "-j": print(json.dumps(current))
+				case "--json": print(json.dumps(current, indent="\t"))
 				case ":k" | ":keys": current = [i for i, x in enumerate(current)]
 				case "--" | ":flat": current = [y for x in current for y in x]
 				case ":id":
@@ -51,6 +56,4 @@ def manipulate_json(jo, args):
 						print(f"Unknown arg: '{arg}'"); return
 		else:
 			print(f"Unknown arg: '{arg}'"); return
-
-	print(json.dumps(current, indent="\t"))
 
